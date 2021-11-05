@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <mutex>
 
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 using namespace std;
 
@@ -85,7 +85,7 @@ int main (int argc, char **argv) {
    pthread_t threads[NUM_THREADS];
    struct thread_data td[NUM_THREADS]; 
 
-   vector<string> line_queues[4];
+   vector<string> line_queues[NUM_THREADS];
 
    for(int i = 0; i < NUM_THREADS; i++ )
       line_queues[i] = vector<string>();
@@ -104,7 +104,7 @@ int main (int argc, char **argv) {
 
          //iterate each line of file
          while (getline(infile, line)) {
-            int thread_id = (iter++) % 4;
+            int thread_id = (iter++) % NUM_THREADS;
             line_queues[thread_id].push_back(line); //assign line for processing to threads
          }
       }

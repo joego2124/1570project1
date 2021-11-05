@@ -9,7 +9,7 @@ using namespace std;
 
 mutex mtx; 
 
-vector<string> line_queues[4];
+vector<string> line_queues[NUM_THREADS];
 vector<string> noise{};
 vector<string> total_words; //collective total of all words to be scanned
 
@@ -125,7 +125,7 @@ int main (int argc, char **argv) {
 
         //iterate each line of file
         while (getline(infile, line)) {
-          int thread_id = (iter++) % 4;
+          int thread_id = (iter++) % NUM_THREADS;
           mtx.lock();
           line_queues[thread_id].push_back(line); //assign line for processing to threads
           mtx.unlock();
