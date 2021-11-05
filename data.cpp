@@ -36,19 +36,8 @@ void *processLine(void *threadarg) {
       //replace non alphabetical characters with space
       std::replace_if(line.begin(), line.end(), [] (const char& c) { return !isalpha(c) ;},' ');
 
-      //get segmented words from line
-      vector<string> words{};
-      size_t pos = 0;
-      char c = ' '; //space character for getting words between
-      string boundary(1, c);
-
-      //check text and break off segments of words when it equals a boundary
-      while ((pos = line.find(boundary)) != string::npos) { //iterate through text line
-         words.push_back(line.substr(0, pos));
-         line.erase(0, pos + boundary.length());
-      }
-
-      // vector<string> words = filterNoise(segmentString(line), noise);
+      //get segmented words from line and filter noise words
+      vector<string> words = filterNoise(segmentString(line), my_data->noise);
 
       //append to all words vector
       mtx.lock();
