@@ -9,19 +9,18 @@ using namespace std;
 
 mutex mtx; 
 
+//data struct for passing data to thread
 struct thread_data {
-   int  thread_id;
-   bool completed;
-   vector<string> line_queue;
-   vector<string> *total_words;
-   vector<string> noise;
+   int  thread_id; //unique identifier
+   bool completed; //indicate thread finished execution
+   vector<string> line_queue; //total lines to be processed by thread
+   vector<string> *total_words; //total words to appending to
+   vector<string> noise; //list of noise words to filter out
 };
 
 void *processLine(void *threadarg) {
    struct thread_data *my_data;
    my_data = (struct thread_data *) threadarg;
-   
-   // vector<string> noise = my_data.noise;
 
    while(my_data->line_queue.size() > 0) {
       //get line from thread arg
@@ -82,14 +81,17 @@ int main (int argc, char **argv) {
    string line;
    while (getline(noise_file, line)) { noise.push_back(line); }
 
-   pthread_t threads[NUM_THREADS];
-   struct thread_data td[NUM_THREADS]; 
+   pthread_t threads[NUM_THREADS]; //thread objs
+   struct thread_data td[NUM_THREADS]; //thread obj data
 
    vector<string> line_queues[NUM_THREADS];
 
+   //initialize thread queues
    for(int i = 0; i < NUM_THREADS; i++ )
       line_queues[i] = vector<string>();
 
+
+   //first loop through files and populate queues for threads
    int iter = 0;
    while (dp = readdir(dfd)) {
       printf ("%s, %d\n", dp->d_name, dp->d_type);
@@ -110,7 +112,7 @@ int main (int argc, char **argv) {
       }
    }
 
-   //create threads
+   //create threads and execute line processing independently
    for(int i = 0; i < NUM_THREADS; i++ ) {
       cout <<"main() : creating thread, " << i << endl;
 
@@ -126,6 +128,7 @@ int main (int argc, char **argv) {
       }
    }
 
+   //running loop to block main thread until line processing is finished
    while (true) {
       bool done = true;
       for (int i = 0; i < NUM_THREADS; i++) {

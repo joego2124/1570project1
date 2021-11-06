@@ -7,6 +7,11 @@ vector<string> noise{};
 
 int main(int argc, char **argv) {
 
+  /**
+   * set up file opening and variables
+   * 
+   */
+
   // Get starting timepoint
   auto start = high_resolution_clock::now();
 
@@ -36,6 +41,10 @@ int main(int argc, char **argv) {
 	string line;
 	while (getline(noise_file, line)) { noise.push_back(line); }
 
+  /**
+   * loop through all files and process individual lines
+   * 
+   */
 	//iterate through directory
   while (dp = readdir(dfd)) {
     printf ("%s, %d\n", dp->d_name, dp->d_type);
@@ -64,6 +73,11 @@ int main(int argc, char **argv) {
       }
     }
   }
+
+  /**
+   * count word frequency and write out to csv file
+   * 
+   */
 
   //map each word to its occurance frequency
 	map<string, int> M = getFrequencyMap(total_words);

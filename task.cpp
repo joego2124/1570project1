@@ -13,13 +13,14 @@ vector<string> line_queues[NUM_THREADS];
 vector<string> noise{};
 vector<string> total_words; //collective total of all words to be scanned
 
+//data struct for passing data to thread
 struct thread_data {
-   int  thread_id;
-   bool completed;
-   bool allocation_finished;
-   vector<string> *line_queue;
-   vector<string> *total_words;
-   vector<string> noise;
+   int  thread_id; //unique identifier
+   bool completed; //indicate thread finished execution
+   bool allocation_finished; //indicate to thread the queue has finished allocating from main thread
+   vector<string> *line_queue; //total lines to be processed by thread
+   vector<string> *total_words; //total words to appending to
+   vector<string> noise; //list of noise words to filter out
 };
 
 void *processLine(void *threadarg) {
@@ -88,13 +89,15 @@ int main (int argc, char **argv) {
   string line;
   while (getline(noise_file, line)) { noise.push_back(line); }
 
-  pthread_t threads[NUM_THREADS];
-  struct thread_data td[NUM_THREADS]; 
+  pthread_t threads[NUM_THREADS]; //thread objs
+  struct thread_data td[NUM_THREADS];  //thread obj data
 
+  //initialize thread queues
   for(int i = 0; i < NUM_THREADS; i++ )
     line_queues[i] = vector<string>();
 
-  //create threads
+  //create threads first, they'll be active to recieve lines from the main thread, hence multi tasks
+  //soley task parallelism since there's only one thread in this example
   for(int i = 0; i < NUM_THREADS; i++ ) {
     cout <<"main() : creating thread, " << i << endl;
 
@@ -111,6 +114,7 @@ int main (int argc, char **argv) {
     }
   }
 
+  //loop through all files and give lines to line processing thread
   int iter = 0;
   while (dp = readdir(dfd)) {
     printf ("%s, %d\n", dp->d_name, dp->d_type);

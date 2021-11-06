@@ -17,6 +17,8 @@
 using namespace std;
 using namespace std::chrono;
 
+//helper functions for line processing
+
 //helper function for comparing type pairs for sorting map
 template <typename T1, typename T2>
 struct less_second {
